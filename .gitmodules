@@ -1,0 +1,9 @@
+[submodule "cmg"]
+	path = cmg
+	url = ./cmg/
+[submodule "kokkos"]
+	path = kokkos
+	url = ./kokkos
+[submodule "kokkos-kernels"]
+	path = kokkos-kernels
+	url = ./kokkos-kernels/

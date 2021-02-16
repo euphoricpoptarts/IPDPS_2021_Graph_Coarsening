@@ -1,0 +1,13 @@
+# Standard ignores
+*~
+*.pyc
+\#*#
+.#*
+.*.swp
+.cproject
+.project
+testing/
+.settings/
+/.vs
+/out/build
+/CMakeSettings.json
