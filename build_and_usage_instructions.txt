@@ -1,0 +1,84 @@
+How to build the project:
+
+sudo privilege optional
+
+steps to build dependencies:
+
+cd into kokkos folder
+mkdir build
+cd into build
+run the following command
+./../generate_makefile.bash --kokkos-path=/full/path/to/kokkos \
+--with-cuda --arch={Your GPU arch, up to Turing75} --compiler=/full/path/to/kokkos/bin/nvcc_wrapper \
+--with-cuda-options=enable_lambda --with-openmp --with-serial
+then run
+sudo make install -j32
+or if no sudo privilege
+./../generate_makefile.bash --kokkos-path=/full/path/to/kokkos \
+--prefix=/install/path/for/kokkos \
+--with-cuda --arch={Your GPU arch, up to Turing75} --compiler=/full/path/to/kokkos/bin/nvcc_wrapper \
+--with-cuda-options=enable_lambda --with-openmp --with-serial
+then run
+make install -j32
+
+cd into kokkos-kernels folder
+mkdir build
+cd into build
+run the following command
+./../cm_generate_makefile.bash --kokkos-path=/full/path/to/kokkos \
+--kokkoskernels-path=/full/path/to/kokkos-kernels \
+--with-cuda --arch={Your GPU arch, up to Turing75} --compiler=/full/path/to/kokkos/bin/nvcc_wrapper \
+--with-cuda-options=enable_lambda --with-openmp --with-serial
+then run
+sudo make install -j32
+or if no sudo privilege
+./../cm_generate_makefile.bash --kokkos-path=/full/path/to/kokkos \
+--kokkoskernels-path=/full/path/to/kokkos-kernels \
+--kokkos-prefix=/install/path/for/kokkos \
+--prefix=/install/path/for/kokkos-kernels \
+--with-cuda --arch={Your GPU arch, up to Turing75} --compiler=/full/path/to/kokkos/bin/nvcc_wrapper \
+--with-cuda-options=enable_lambda --with-openmp --with-serial
+then run
+make install -j32
+
+steps to build project:
+cd into cmg
+mkdir build
+cd into build
+run the following command
+cmake .. -DCMAKE_CXX_COMPILER=/full/path/to/kokkos/bin/nvcc_wrapper
+or if you did not install with sudo privileges
+cmake .. -DCMAKE_CXX_COMPILER=/full/path/to/kokkos/bin/nvcc_wrapper -DCMAKE_PREFIX_PATH=/install/path/for/kokkos-kernels/lib64/cmake/KokkosKernels/
+then run
+make all -j32 (sudo not needed here)
+
+to build OpenMP version:
+vim (or other editor) cmg/CMakeLists.txt
+change the following lines:
+#add_subdirectory(/home/mike/workspace/kokkos bin_kokkos/)
+#add_subdirectory(/home/mike/workspace/kokkos-kernels bin_kernels/)
+find_package(KokkosKernels REQUIRED)
+to
+add_subdirectory(/full/path/to/kokkos bin_kokkos/)
+add_subdirectory(/full/path/to/kokkos-kernels bin_kernels/)
+#find_package(KokkosKernels REQUIRED)
+
+then mkdir mp_build (inside cmg directory)
+cd into mp_build
+run the following command
+cmake .. -DKokkos_ENABLE_OPENMP=ON -DKokkos_ENABLE_SERIAL=ON
+then run
+make all -j32
+
+we provide a utility program to convert mtx format graphs into input format required by other programs
+to build cd into cmg then run
+g++ mtx2csr.cpp -o mtx2csr
+use this program as follows:
+./mtx2csr <mtx_file> <output_graph_file>
+
+to run the programs inside build and mp_build, there are three parameters
+./build/hec_fm <input_graph_file> <metrics_json_file> <config_file>
+if you don't care about detailed timing information, use /dev/null for <metrics_json_file>
+use base_config.txt for <config_file>
+
+If these instructions did not work for you, please contact msg5334@psu.edu
